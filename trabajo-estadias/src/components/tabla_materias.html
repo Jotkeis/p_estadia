@@ -1,0 +1,93 @@
+<?php
+if (isset($_POST["create__btn__materia"])) {
+    $nombre_materia = $_POST["nombre_materia"];
+    $usuario_id = $_POST["usuario_id"];
+    $sql__create__materia = "INSERT INTO `subject`(`nombre_materia`, `usuario_id`) VALUES ('$nombre_materia','$usuario_id')";
+    mysqli_query($conn, $sql__create__materia);
+    header("Location main.php");
+}
+
+if (isset($_POST["eliminar__materia"])) {
+    $id__materia = $_POST["id__materia"];
+    $sql__DELETE__materia = "DELETE FROM `subject` WHERE `id` = $id__materia";
+    mysqli_query($conn, $sql__DELETE__materia);
+}
+
+
+$sqlMaterias = "SELECT * FROM `subject`";
+$resMaterias = mysqli_query($conn, $sqlMaterias);
+
+?>
+<?php if($user_name_role == "Admin"){?>
+<div class="mask__create__materia">
+    <span class="title">+ Asignar Materia</span>
+    <form method="POST" action="main.php" class="form__create__carrer">
+        <select class="btn" name="nombre_materia">
+            <?php  
+                $sql__GET__carrers = "SELECT * FROM `materias`";
+                $res__GET__carrers = mysqli_query($conn, $sql__GET__carrers);
+                while ($row__GET__carrers = mysqli_fetch_assoc($res__GET__carrers)) {
+            ?>
+                <option value=" <?php echo $row__GET__carrers["nombre_materia"]; ?> "> <?php echo $row__GET__carrers["nombre_materia"]; ?> </option>
+            <?php } ?>    
+        </select>
+
+        <select class="btn" name="usuario_id">
+            <?php  
+                $sql__GET__users = "SELECT * FROM `users`";
+                $res__GET__users = mysqli_query($conn, $sql__GET__users);
+                while ($row__GET__users = mysqli_fetch_assoc($res__GET__users)) {
+            ?>
+            <option value=" <?php echo $row__GET__users["id"]; ?> "> <?php echo $row__GET__users["nombre"]; ?> </option>
+            <?php } ?>
+        </select>
+        <button type="submit" class="btn see__more__btn" name="create__btn__materia"> Asignar </button>
+    </form>
+</div>
+<?php }?>
+<header>
+    <h1 class="title">TUS MATERIAS</h1>
+</header>
+<table class="table">
+    <thead>
+        <th class="btn">#</th>
+        <th class="btn">Materia</th>
+        <th class="btn">Usuario</th>
+        <?php if($user_name_role == "Admin"){?>
+        <th class="btn">Acciones</th>
+        <?php }?>
+
+    </thead>
+    <tbody>
+        <?php
+        while ($rowMateria = mysqli_fetch_assoc($resMaterias)) {
+        ?>
+        <form action="main.php" method="POST">
+        <tr>
+            <td><input type="text" class="btn" name="id__materia" value="<?php echo $rowMateria["id"]; ?>"></td>
+            <td class="btn"><?php echo $rowMateria["nombre_materia"]; ?></td>
+            <td>
+                <?php
+                $id_user_select = $rowMateria["usuario_id"]; 
+                $sql__usuario__id = "SELECT * FROM `users` WHERE `id` = $id_user_select";
+                $res__usuario__sql = mysqli_query($conn, $sql__usuario__id);
+                if ($row__usuario__res = mysqli_fetch_assoc($res__usuario__sql)) {
+                    echo $row__usuario__res["nombre"];
+                }
+                ?>
+            </td>
+            <?php if($user_name_role == "Admin"){?>
+            <td>
+                <button class="see__more__btn btn btn__danger" name="eliminar__materia">
+                    Eliminar
+                </button>
+            </td>
+            <?php }?>
+
+        </tr>
+        </form>
+        <?php
+            } 
+        ?>
+    </tbody>
+</table>

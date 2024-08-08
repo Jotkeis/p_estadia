@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  
+  <title>Panel de control</title>
+  
+</head>
+<body>
+    
+  <div class="container">
+    <h1>Panel de Control
+        <img class="ute" src="ute_img.png" width="140px" alt="">
+    </h1> 
+
+    <div class="section">
+      <h2 class="section-title">Datos de los Estudiantes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre(s)</th>
+            <th>Apellidos</th>
+            <th>Edad</th>
+            <th>Email</th>
+            <th>Dirección</th>
+            <th>Carrera</th>
+            <th>Acciónes</th>
+          </tr>
+        </thead>
+        <tbody id="student-table">
+          
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Nuevos estudiantes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre(s)</th>
+            <th>Apellidos</th>
+            <th>Edad</th>
+            <th>Email</th>
+            <th>Dirección</th>
+            <th>carrera</th>
+          </tr>
+        </thead>
+        <tbody id="new-students-table">
+          
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Total de Estudiantes</h2>
+      <ul id="major-stats">
+        
+      </ul>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Total de Estudiantes por Carrera</h2>
+        <ul id="major-stats">
+          
+        </ul>
+      </div>
+  </div>
+  
+  <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<?php
+$sql__calificaciones = "SELECT * FROM calificaciones";
+$res__calificaciones = mysqli_query($conn, $sql__calificaciones);
+
+if (isset($_POST["delete__btn__calif"])) {
+    $id__delete = $_POST["id__delete"];
+    echo "<script>alert('Elemento eliminado $id__delete')</script>";
+    $sql__delete = "DELETE FROM `calificaciones` WHERE `id` = $id__delete";
+    mysqli_query($conn, $sql__delete);
+    header("Location: main.php");
+    exit();
+}
+
+if (isset($_POST["edit__btn__calif"])) {
+    $id__edit = $_POST["id__edit"];
+    $estudiante = $_POST["estudiante"];
+    $materia = $_POST["materia"];
+    $calificacion = $_POST["calificacion"];
+    $fecha = $_POST["fecha"];
+    $sql__edit = "UPDATE `calificaciones` SET 
+        `estudiante`='$estudiante',
+        `materia`='$materia',
+        `calificacion`='$calificacion',
+        `fecha`='$fecha' WHERE `id` = $id__edit";
+
+    mysqli_query($conn, $sql__edit);
+    header("Location: main.php");
+    exit();
+}
+?>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Estudiante</th>
+            <th>Materia</th>
+            <th>Calificacion</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        while ($row = mysqli_fetch_assoc($res__calificaciones)) {
+        ?>
+            <tr>
+                <form method="post" action="main.php" style="display:inline-block;">
+                    <td class="letter"><?php echo $row["id"] ?></td>
+                    <td><input class="btn" type="text" name="estudiante" value="<?php echo $row["estudiante"] ?>"></td>
+                    <td><input class="btn" type="text" name="materia" value="<?php echo $row["materia"] ?>"></td>
+                    <td><input class="btn" type="text" name="calificacion" value="<?php echo $row["calificacion"] ?>"></td>
+                    <td><input class="btn" type="text" name="fecha" value="<?php echo $row["fecha"] ?>"></td>
+                    <?php if($user_name_role == "Admin"){?>
+                    <td class="td__sticky">
+                        <input type="hidden" name="id__delete" value="<?php echo $row["id"] ?>">
+                        <button type="submit" class="btn danger__btn" name="delete__btn__calif">Borrar</button>
+                    </td>
+                    <td>
+                        <input type="hidden" name="id__edit" value="<?php echo $row["id"] ?>">
+                        <button type="submit" class="btn see__more__btn btn" name="edit__btn__calif">Editar</button>
+                    </td>
+                    <?php }?>
+                </form>
+            </tr>
+        <?php
+        }
+        ?>
+    </tbody>
+</table>

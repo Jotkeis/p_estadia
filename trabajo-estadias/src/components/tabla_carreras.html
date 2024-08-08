@@ -1,0 +1,78 @@
+<?php
+$sql__carrers = "SELECT * FROM carrer";
+$res__carrers = mysqli_query($conn, $sql__carrers);
+
+if (isset($_POST["delete__btn__carrer"])) {
+    $id__delete = $_POST["id__delete"];
+    echo "<script>alert('Elemento eliminado $id__delete')</script>";
+    $sql__delete = "DELETE FROM `carrer` WHERE `id` = $id__delete";
+    mysqli_query($conn, $sql__delete);
+    header("Location: main.php");
+    exit();
+}
+
+if (isset($_POST["edit__btn__carrer"])) {
+    $id__edit = $_POST["id__edit"];
+    $carrer = $_POST["carrer"];
+    $sql__edit = "UPDATE `carrer` SET 
+        `carrera`='$carrer' WHERE `id` = $id__edit";
+
+    mysqli_query($conn, $sql__edit);
+    header("Location: main.php");
+    exit();
+}
+
+if (isset($_POST["create__btn__carrer"])) {
+    $id__create = $_POST["id__create"];
+    $carrer__create = $_POST["carrer__create"];
+    $sql__create = "INSERT INTO `carrer` (`carrera`) VALUES ('$carrer__create')";
+
+    mysqli_query($conn, $sql__create);
+    header("Location: main.php");
+    exit();
+}
+?>
+
+<div class="mask">
+    <form method="POST" action="main.php" class="form__create__carrer">
+        <span class="x">x</span>
+        <h1 class="title">+ Agregar nueva carrera</h1>
+        <input type="text" class="btn" name="carrer__create" placeholder="Escribe el nombre de la carrera">
+        <button type="submit" class="btn see__more__btn" name="create__btn__carrer"> Crear </button>
+    </form>
+</div>
+
+<div class="container__create">
+    <button type="submit" class="btn see__more__btn" id="create__carrer" name="edit__btn__carrer">+ Agregar nueva carrera</button>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        while ($row = mysqli_fetch_assoc($res__carrers)) {
+        ?>
+            <tr>
+                <form method="post" action="main.php" style="display:inline-block;">
+                    <td class="letter"><?php echo $row["id"] ?></td>
+                    <td><input class="btn" type="text" name="carrer" value="<?php echo $row["carrera"] ?>"></td>
+                    <td class="td__sticky">
+                        <input type="hidden" name="id__delete" value="<?php echo $row["id"] ?>">
+                        <button type="submit" class="btn danger__btn" name="delete__btn__carrer">Borrar</button>
+                    </td>
+                    <td>
+                        <input type="hidden" name="id__edit" value="<?php echo $row["id"] ?>">
+                        <button type="submit" class="btn see__more__btn btn" name="edit__btn__carrer">Editar</button>
+                    </td>
+                </form>
+            </tr>
+        <?php
+        }
+        ?>
+    </tbody>
+</table>

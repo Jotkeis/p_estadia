@@ -1,0 +1,180 @@
+<?php
+$_SESSION["roleFilter"] = "borrado";
+
+if (isset($_POST["delete"])) {
+    $select__id = $_POST["select__id"];
+    echo "Eliminar: $select__id";
+    $sqlDelete = "DELETE FROM `users` WHERE `id`= $select__id";
+    $res = mysqli_query($conn, $sqlDelete);
+    if ($res) {
+        echo "<script>alert('Elemento eliminado');</script>";
+    } else {
+        echo "<script>alert('Hubo un error al eliminar el elemento: " . mysqli_error($conn) . "');</script>";
+    }
+}
+
+if (isset($_POST["update"])) {
+    $select__id__update = $_POST["select__id__update"];
+    $nombre = $_POST["nombre_tabla"];
+    $correo = $_POST["correo_tabla"];
+    $contra_tabla = $_POST["contra_tabla"];
+    $tipo = isset($_POST["tipo_tabla"]) ? $_POST["tipo_tabla"] : '';
+    $status = isset($_POST["status_tabla"]) ? $_POST["status_tabla"] : '';
+    $carrera = isset($_POST["carrera_tabla"]) ? $_POST["carrera_tabla"] : '';
+    $direccion = $_POST["direccion_tabla"];
+    $numero = $_POST["numero_tabla"];
+
+    echo "Ultima actualización: #$select__id__update, Nombre: $nombre";
+
+    $sqlUpdate = "UPDATE `users` SET 
+        `nombre`='$nombre', 
+        `correo`='$correo', 
+        `contraseña`='$contra_tabla', 
+        `tipo_usuario`='$tipo', 
+        `status`='$status',
+        `carrera`='$carrera',
+        `direccion`='$direccion', 
+        `numero_celular`='$numero' 
+        WHERE `id`='$select__id__update'";
+
+    $res = mysqli_query($conn, $sqlUpdate);
+
+    if ($res) {
+        echo "<script>alert('Elemento actualizado');</script>";
+    } else {
+        echo "<script>alert('Hubo un error al actualizar el elemento: " . mysqli_error($conn) . "');</script>";
+    }
+}
+
+if (isset($_POST["filter"])) {
+    $_SESSION["roleFilter"] = isset($_POST["roleFilter"]) && $_POST["roleFilter"] !== "" ? $_POST["roleFilter"] : "borrado";
+    $roleFilter = intval($_SESSION['roleFilter']);
+    $sql__filter = "SELECT * FROM `role` WHERE `id` = '$roleFilter'";
+    $res__filter = mysqli_query($conn, $sql__filter);
+    if ($row__filter = mysqli_fetch_assoc($res__filter)) {
+        echo "<i>Filtro: '" . $row__filter["tipo_usuario"] . "' </i>";
+    }
+} else {
+    echo "<script>console.log('Hubo un error al filtrar el elemento: " . mysqli_error($conn) . "');</script>";
+}
+
+if (isset($_POST["desfiltro"])) {
+    $_SESSION["roleFilter"] = "borrado";
+}
+?>
+
+<header>
+    <h1 class="title">TABLA USUARIOS</h1>
+</header>
+<form action="main.php" method="post">
+    <div class="container">
+        <select name="roleFilter" class="btn">
+            <option disabled selected>Filtra por tipo de Usuario</option>
+            <?php
+            $sqlTypes = "SELECT * FROM `role`";
+            $resTypes = mysqli_query($conn, $sqlTypes);
+            while ($rowTypes = mysqli_fetch_assoc($resTypes)) {
+            ?>
+                <option value="<?php echo $rowTypes["id"]; ?>"><?php echo $rowTypes["tipo_usuario"]; ?></option>
+            <?php
+            }
+            ?>
+        </select>
+        <button class="btn" name="filter">Filtrar</button>
+        <button class="btn" name="desfiltro">Quitar Filtro</button>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <th scope="col">No. #</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Correo</th>
+        <th scope="col">Contraseña</th>
+        <th scope="col">Tipo de usuario</th>
+        <th scope="col">Estado de cuenta</th>
+        <th scope="col">Carrera</th>
+        <th scope="col">Direccion</th>
+        <th scope="col">No. Celular</th>
+        <th rowspan="2">Acciones</th>
+    </thead>
+    <tbody>
+        <?php
+        $roleFilter = $_SESSION['roleFilter'];
+        $sqlCarrer = $roleFilter == "borrado" ? "SELECT * FROM `users`" : "SELECT * FROM `users` WHERE `tipo_usuario` = '$roleFilter'";
+        $res = mysqli_query($conn, $sqlCarrer);
+        while ($row = mysqli_fetch_assoc($res)) {
+        ?>
+            <tr>
+                <form action="main.php" method="post">
+                    <td><input class="btn" name="id_tabla" type="text" value="<?php echo $row['id']; ?>" readonly></td>
+                    <td><input class="btn" name="nombre_tabla" type="text" value="<?php echo $row['nombre']; ?>"></td>
+                    <td><input class="btn" name="correo_tabla" type="text" value="<?php echo $row['correo']; ?>"></td>
+                    <td><input class="btn" name="contra_tabla" type="text" value="<?php echo $row['contraseña']; ?>"></td>
+
+                    <td>
+                        <select name="tipo_tabla" class="btn">
+                            <?php
+                            $id = $row['tipo_usuario'];
+                            $sqlType = "SELECT * FROM `role` WHERE `id` = '$id'";
+                            $resType = mysqli_query($conn, $sqlType);
+                            if ($rowType = mysqli_fetch_assoc($resType)) {
+                                // Mostrar la opción seleccionada
+                                echo "<option value='{$rowType['id']}' selected>{$rowType['tipo_usuario']}</option>";
+                            }
+                            $sqlTypesUser = "SELECT * FROM `role`";
+                            $resTypesUser = mysqli_query($conn, $sqlTypesUser);
+                            while ($rowTypesUser = mysqli_fetch_assoc($resTypesUser)) {
+                                if ($rowTypesUser['id'] != $id) { // Excluir la opción actualmente seleccionada
+                                    echo "<option value='{$rowTypesUser['id']}'>{$rowTypesUser['tipo_usuario']}</option>";
+                                }
+                            }
+                            ?>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="btn" name="status_tabla">
+                            <option selected disabled value="<?php echo $row['status']; ?>"><?php echo $row['status']; ?></option>
+                            <option value="Activado">Activado</option>
+                            <option value="Desactivado">Desactivado</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="btn" name="carrera_tabla">
+                            <?php
+                            $id__carrer = $row['carrera'];
+                            $sql__carrer = "SELECT * FROM `carrer` WHERE `id` = '$id__carrer'";
+                            $res__carrer = mysqli_query($conn, $sql__carrer);
+                            if ($row__carrer = mysqli_fetch_assoc($res__carrer)) {
+                                // Mostrar la opción seleccionada
+                                echo "<option value='{$row__carrer['id']}' selected>{$row__carrer['carrera']}</option>";
+                            }
+                            $sql__carrers = "SELECT * FROM `carrer`";
+                            $res__carrers = mysqli_query($conn, $sql__carrers);
+                            while ($row__carrers = mysqli_fetch_assoc($res__carrers)) {
+                                if ($row__carrers['id'] != $id__carrer) { // Excluir la opción actualmente seleccionada
+                                    echo "<option value='{$row__carrers['id']}'>{$row__carrers['carrera']}</option>";
+                                }
+                            }
+                            ?>
+                        </select>
+                    </td>
+                    <td><input class="btn" name="direccion_tabla" type="text" value="<?php echo $row['direccion']; ?>"></td>
+                    <td><input class="btn" name="numero_tabla" type="text" value="<?php echo $row['numero_celular']; ?>"></td>
+                    <input type="hidden" name="select__id__update" value="<?php echo $row['id']; ?>">
+                    <td class="actions_table">
+                        <button class="btn see__more__btn" name="update">Actualizar</button>
+                    </td>
+                </form>
+                    <td>
+                    <form method="post" action="main.php">
+                        <input type="hidden" name="select__id" value="<?php echo $row['id']; ?>">
+                        <button class="btn danger__btn" name="delete">Eliminar</button>
+                    </form>
+                    </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </tbody>
+</table>
+
